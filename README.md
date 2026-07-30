@@ -10,11 +10,15 @@ brew tap csyio/vaultline
 brew install --cask vaultline
 ```
 
-Ya da tek satırda:
+İlk kurulumda Homebrew, resmî olmayan bir tap'ten cask yüklerken açık onay
+ister (Homebrew 6.0+ güvenlik özelliği). İstenirse:
 
 ```sh
-brew install --cask csyio/vaultline/vaultline
+brew trust --cask csyio/vaultline/vaultline
 ```
+
+komutunu çalıştırıp kurulumu tekrarlayın. Bu, tap'in cask tanımına
+(indirme adresi + SHA256 doğrulaması) güvendiğinizi belirtir.
 
 ## Güncelleme
 

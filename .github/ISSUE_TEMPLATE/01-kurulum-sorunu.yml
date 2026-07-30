@@ -1,0 +1,64 @@
+name: 🍺 Kurulum / kaldırma sorunu
+description: brew install, upgrade veya uninstall beklendiği gibi çalışmıyor
+title: "[Tap] "
+labels: ["tap"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Bu form **tap'le** ilgili sorunlar içindir: kurulum, güncelleme,
+        kaldırma, cask tanımı.
+
+        Uygulama kurulduktan sonra yaşadığınız bir sorun için
+        [vaultline-app](https://github.com/csyio/vaultline-app/issues)
+        deposunu kullanın.
+
+  - type: dropdown
+    id: komut
+    attributes:
+      label: Hangi komutta?
+      options:
+        - brew tap csyio/vaultline
+        - brew install --cask vaultline
+        - brew upgrade --cask vaultline
+        - brew uninstall --cask vaultline
+        - brew uninstall --zap --cask vaultline
+        - Diğer
+    validations:
+      required: true
+
+  - type: textarea
+    id: cikti
+    attributes:
+      label: Komutun çıktısı
+      description: Hata mesajının tamamını yapıştırın.
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: brew
+    attributes:
+      label: Homebrew sürümü
+      description: "`brew --version` çıktısının ilk satırı"
+      placeholder: "Homebrew 6.0.13"
+    validations:
+      required: true
+
+  - type: input
+    id: macos
+    attributes:
+      label: macOS sürümü ve makine
+      placeholder: "15.5 (Sequoia), Apple Silicon"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: zap
+    attributes:
+      label: "`--zap` kullandıysanız"
+      options:
+        - label: >-
+            Kaldırma sonrası kasa dosyam (.vault) yerinde duruyor
+            — durmuyorsa bunu HEMEN belirtin, öncelikli ele alınır
+          required: false

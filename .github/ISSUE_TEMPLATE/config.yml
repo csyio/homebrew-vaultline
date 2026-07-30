@@ -1,0 +1,19 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Güvenlik açığı bildirimi
+    url: https://github.com/csyio/homebrew-vaultline/security/advisories/new
+    about: >-
+      Cask'ın gösterdiği paket ya da özet manipüle edilmiş görünüyorsa issue
+      AÇMAYIN. Bu özel bildirim akışını kullanın.
+
+  - name: 🐞 Uygulamanın kendisiyle ilgili sorun
+    url: https://github.com/csyio/vaultline-app/issues
+    about: >-
+      Kurulum tamamlandıktan sonra uygulamada yaşadığınız sorunlar için
+      vaultline-app deposunu kullanın.
+
+  - name: ⬆️ Yeni sürüm çıkmış, cask geride kalmış
+    url: https://github.com/csyio/homebrew-vaultline/issues/new?title=%5BS%C3%BCr%C3%BCm%5D+Cask+geride+kald%C4%B1
+    about: >-
+      Sürüm yükseltme elle PR ile değil, "Cask sürümünü yükselt" iş akışıyla
+      yapılır. Fark ettiyseniz issue açmanız yeterli.

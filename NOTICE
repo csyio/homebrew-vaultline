@@ -1,0 +1,17 @@
+NOTICE — lisansın kapsamı / scope of the licence
+================================================
+Bu lisans yalnızca bu deponun içeriğini kapsar: Cask tanımı (`Casks/vaultline.rb`),
+belgeler ve iş akışları. Homebrew'un kendi lisansıyla aynı olması bilinçlidir —
+bir tap'in tanım dosyaları, tap ekosisteminde yeniden kullanılabilir olmalıdır.
+
+Cask'ın kurduğu Vaultline uygulamasının kendisi bu lisansın kapsamında DEĞİLDİR.
+Uygulama ayrı şartlara tabidir:
+https://github.com/csyio/vaultline-app/blob/main/LICENSE
+
+This licence covers only the contents of this repository: the cask definition
+(`Casks/vaultline.rb`), documentation, and workflows. Matching Homebrew's own
+licence is deliberate — a tap's definition files should be reusable within the
+tap ecosystem.
+
+The Vaultline application that the cask installs is NOT covered by this licence.
+The application is subject to separate terms, linked above.

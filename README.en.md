@@ -99,8 +99,9 @@ The package is signed with an Apple Developer ID and notarized by Apple. The
 
 ## Licence
 
-[BSD 2-Clause](LICENSE) — the same licence as Homebrew itself. This covers only
-this repository's contents (the cask definition, documentation, workflows).
+[BSD 2-Clause](LICENSE) — the same licence as Homebrew itself. It covers only
+this repository's contents (the cask definition, documentation, workflows);
+see [NOTICE](NOTICE) for the details.
 
 The Vaultline application that the cask installs is subject to
 [separate terms](https://github.com/csyio/vaultline-app/blob/main/LICENSE).

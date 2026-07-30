@@ -98,7 +98,8 @@ Cask'taki `sha256`, [sürümdeki](https://github.com/csyio/vaultline-app/release
 ## Lisans
 
 [BSD 2-Clause](LICENSE) — Homebrew'un kendi lisansıyla aynı. Yalnızca bu
-deponun içeriğini (cask tanımı, belgeler, iş akışları) kapsar.
+deponun içeriğini (cask tanımı, belgeler, iş akışları) kapsar; ayrıntısı
+[NOTICE](NOTICE) dosyasında.
 
 Cask'ın kurduğu Vaultline uygulaması
 [ayrı şartlara](https://github.com/csyio/vaultline-app/blob/main/LICENSE) tabidir.

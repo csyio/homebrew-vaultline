@@ -7,7 +7,7 @@
 - [ ] `brew style csyio/vaultline` temiz
 - [ ] `brew audit --cask --online --strict csyio/vaultline/vaultline` temiz
 - [ ] Bu PR **sürüm yükseltmesi değil**
-      (sürüm yükseltme elle yapılmaz → [`bump.yml`](.github/workflows/bump.yml))
+      (sürüm yükseltme elle yapılmaz → [`bump.yml`](https://github.com/csyio/homebrew-vaultline/blob/main/.github/workflows/bump.yml))
 - [ ] `zap` listesine yol eklediysem, o yolun uygulamayı çalıştırdıktan sonra
       gerçekten oluştuğunu **doğruladım** ve nasıl doğruladığımı aşağıda yazdım
 - [ ] Kasa (`.vault`) veya yedek (`.vaultbak`) dosyalarına dokunan bir yol

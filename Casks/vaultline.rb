@@ -13,7 +13,7 @@ cask "vaultline" do
   homepage "https://github.com/csyio/vaultline-app"
 
   # Notarize edilmis; Gatekeeper temiz gecer.
-  depends_on macos: ">= :catalina"
+  depends_on macos: :catalina
 
   app "Vaultline.app"
 

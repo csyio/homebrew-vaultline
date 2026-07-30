@@ -1,0 +1,89 @@
+# Cask'ın Homebrew kurallarına uyduğunu ve indirme adresinin hâlâ geçerli
+# olduğunu doğrular.
+#
+# Haftalık çalışması bilinçli: bir cask, kimse dokunmasa bile bozulabilir —
+# sürüm varlığı silinir, adres değişir ya da paket yeniden yüklenip özeti
+# değişir. Bunu kullanıcı "brew install çalışmıyor" diye yazmadan önce
+# görmek isteriz.
+name: Cask denetimi
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Casks/**"
+      - ".github/workflows/audit.yml"
+  pull_request:
+    paths:
+      - "Casks/**"
+  schedule:
+    - cron: "17 6 * * 1" # her pazartesi 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: brew style + audit
+    runs-on: macos-latest
+    steps:
+      - name: Depoyu al
+        uses: actions/checkout@v7
+
+      - name: Homebrew kur
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Depoyu yerel tap olarak kaydet
+        run: |
+          TAP_DIR="$(brew --repository)/Library/Taps/csyio/homebrew-vaultline"
+          mkdir -p "$(dirname "$TAP_DIR")"
+          cp -R "$GITHUB_WORKSPACE" "$TAP_DIR"
+          brew tap
+
+      - name: brew style
+        run: brew style csyio/vaultline
+
+      - name: brew audit
+        run: brew audit --cask --online --strict csyio/vaultline/vaultline
+
+      # Bu adım audit'in yapmadığı şeyi yapar: cask'taki sha256 ile sürümün
+      # kendi SHA256SUMS.txt dosyasındaki değeri karşılaştırır. audit yalnızca
+      # "indirilen dosya cask'taki özetle uyuşuyor mu" der; burada sorduğumuz
+      # "cask, yayınlanan manifesto ile aynı şeyi mi gösteriyor" sorusudur.
+      - name: sha256, sürüm manifestosuyla uyuşuyor mu?
+        run: |
+          version="$(sed -n 's/^  version "\(.*\)"$/\1/p' Casks/vaultline.rb)"
+          cask_sha="$(sed -n 's/^  sha256 "\(.*\)"$/\1/p' Casks/vaultline.rb)"
+
+          if [ -z "$version" ] || [ -z "$cask_sha" ]; then
+            echo "::error::Cask dosyasından version/sha256 okunamadı."
+            exit 1
+          fi
+
+          dmg="Vaultline_${version}_universal.dmg"
+          url="https://github.com/csyio/vaultline-app/releases/download/v${version}/SHA256SUMS.txt"
+
+          if ! curl -fsSL "$url" -o sums.txt; then
+            echo "::error::SHA256SUMS.txt indirilemedi: $url"
+            exit 1
+          fi
+
+          release_sha="$(awk -v f="$dmg" '$2 == f || $2 == "*" f { print $1 }' sums.txt | head -1)"
+
+          if [ -z "$release_sha" ]; then
+            echo "::error::SHA256SUMS.txt içinde $dmg satırı yok."
+            cat sums.txt
+            exit 1
+          fi
+
+          if [ "$cask_sha" != "$release_sha" ]; then
+            echo "::error::sha256 uyuşmuyor — cask: $cask_sha / sürüm: $release_sha"
+            exit 1
+          fi
+
+          echo "✓ $dmg — sha256 doğrulandı ($cask_sha)"

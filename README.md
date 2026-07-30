@@ -1,7 +1,12 @@
 # homebrew-vaultline
 
+[![Cask denetimi](https://github.com/csyio/homebrew-vaultline/actions/workflows/audit.yml/badge.svg)](https://github.com/csyio/homebrew-vaultline/actions/workflows/audit.yml)
+[![Lisans](https://img.shields.io/badge/lisans-BSD--2--Clause-informational)](LICENSE)
+
 [Vaultline](https://github.com/csyio/vaultline-app) için Homebrew tap'i —
 yerel, sıfır‑bilgi masaüstü şifre yöneticisi (macOS).
+
+**Türkçe** · [English](README.en.md)
 
 ## Kurulum
 
@@ -69,8 +74,31 @@ brew uninstall --zap --cask vaultline
 > ve içindekilere artık ihtiyacınız olmadığından emin olun. **Geri dönüşü
 > yoktur.**
 
----
+## Bu tap nasıl doğrulanıyor?
+
+Cask yalnızca elle sürdürülmüyor; iki iş akışı bekçilik ediyor:
+
+| İş akışı | Ne yapar |
+| :-- | :-- |
+| [`audit.yml`](.github/workflows/audit.yml) | Her değişiklikte ve haftada bir `brew style` ile `brew audit --online --strict` çalıştırır. Ayrıca cask'taki `sha256`'nın sürümle birlikte yayımlanan `SHA256SUMS.txt` değeriyle aynı olduğunu kontrol eder — bir cask kimse dokunmasa bile bozulabilir ve bunu kullanıcıdan önce görmek isteriz. |
+| [`bump.yml`](.github/workflows/bump.yml) | Cask'ı yeni sürüme yükseltir. Özet, sürümün kendi `SHA256SUMS.txt` dosyasından okunur ve gerçekten indirilen paketle yeniden karşılaştırılır — elle yazılmaz. |
 
 Paket, Apple Developer ID ile imzalı ve Apple tarafından notarize edilmiştir.
 Cask'taki `sha256`, [sürümdeki](https://github.com/csyio/vaultline-app/releases/latest)
 `SHA256SUMS.txt` ile birebir aynıdır.
+
+## Sorun bildirimi
+
+- **Bu tap'le** ilgili sorun (kurulum, kaldırma, cask tanımı) →
+  [buradan issue açın](https://github.com/csyio/homebrew-vaultline/issues)
+- **Uygulamanın kendisiyle** ilgili sorun →
+  [vaultline-app issues](https://github.com/csyio/vaultline-app/issues)
+- **Güvenlik açığı** → issue açmayın, [SECURITY.md](SECURITY.md) dosyasına bakın
+
+## Lisans
+
+[BSD 2-Clause](LICENSE) — Homebrew'un kendi lisansıyla aynı. Yalnızca bu
+deponun içeriğini (cask tanımı, belgeler, iş akışları) kapsar.
+
+Cask'ın kurduğu Vaultline uygulaması
+[ayrı şartlara](https://github.com/csyio/vaultline-app/blob/main/LICENSE) tabidir.

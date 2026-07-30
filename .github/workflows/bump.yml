@@ -1,0 +1,135 @@
+# Cask'ı yeni bir Vaultline sürümüne yükseltir.
+#
+# version ve sha256'yı elle düzenlemek, bir şifre yöneticisi dağıtımında
+# yapılabilecek en riskli kopyala-yapıştır işidir: yanlış bir özet, kullanıcıya
+# doğrulanmamış bir paket kurar. Bu iş akışı özeti sürümün kendi
+# SHA256SUMS.txt dosyasından okur — elle girilmez.
+#
+# Kullanım: Actions → "Cask sürümünü yükselt" → Run workflow → sürüm no.
+name: Cask sürümünü yükselt
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Yeni Vaultline sürümü — 'v' olmadan, örn. 0.2.0"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    name: version + sha256 güncelle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu al
+        uses: actions/checkout@v7
+
+      # Sürüm numarası kullanıcı girdisidir; doğrudan komut satırına
+      # gömülmez, ortam değişkeni üzerinden geçirilir ve biçimi doğrulanır.
+      - name: Sürüm numarasını doğrula
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Sürüm X.Y.Z biçiminde olmalı. Girilen: $VERSION"
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Sürüm manifestosundan sha256 oku
+        run: |
+          dmg="Vaultline_${VERSION}_universal.dmg"
+          url="https://github.com/csyio/vaultline-app/releases/download/v${VERSION}/SHA256SUMS.txt"
+
+          if ! curl -fsSL "$url" -o sums.txt; then
+            echo "::error::v${VERSION} sürümü ya da SHA256SUMS.txt bulunamadı: $url"
+            exit 1
+          fi
+
+          sha="$(awk -v f="$dmg" '$2 == f || $2 == "*" f { print $1 }' sums.txt | head -1)"
+
+          if ! printf '%s' "$sha" | grep -Eq '^[0-9a-f]{64}$'; then
+            echo "::error::$dmg için geçerli bir sha256 okunamadı."
+            cat sums.txt
+            exit 1
+          fi
+
+          echo "SHA=$sha" >> "$GITHUB_ENV"
+          echo "DMG=$dmg" >> "$GITHUB_ENV"
+
+      - name: Paketin gerçekten indirilebildiğini doğrula
+        run: |
+          url="https://github.com/csyio/vaultline-app/releases/download/v${VERSION}/${DMG}"
+          curl -fsSL "$url" -o package.dmg
+          actual="$(sha256sum package.dmg | cut -d' ' -f1)"
+
+          if [ "$actual" != "$SHA" ]; then
+            echo "::error::İndirilen paketin özeti manifestoyla uyuşmuyor!"
+            echo "  manifesto: $SHA"
+            echo "  indirilen: $actual"
+            exit 1
+          fi
+
+          echo "✓ $DMG indirildi ve özeti doğrulandı"
+          rm -f package.dmg
+
+      - name: Cask'ı güncelle
+        run: |
+          cask="Casks/vaultline.rb"
+          old_version="$(sed -n 's/^  version "\(.*\)"$/\1/p' "$cask")"
+
+          if [ "$old_version" = "$VERSION" ]; then
+            echo "::notice::Cask zaten $VERSION sürümünde, değişiklik yok."
+            echo "CHANGED=false" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          sed -i "s|^  version \".*\"$|  version \"${VERSION}\"|" "$cask"
+          sed -i "s|^  sha256 \".*\"$|  sha256 \"${SHA}\"|" "$cask"
+
+          echo "OLD_VERSION=$old_version" >> "$GITHUB_ENV"
+          echo "CHANGED=true" >> "$GITHUB_ENV"
+          git diff -- "$cask"
+
+      - name: Değişikliği işle
+        if: env.CHANGED == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/vaultline.rb
+
+          # Mesajı dosyadan veriyoruz: `git commit -m` içine gömülü çok satırlı
+          # metin, YAML girintisini de commit mesajına taşır.
+          {
+            echo "Vaultline ${OLD_VERSION} → ${VERSION}"
+            echo
+            echo "sha256, sürümün SHA256SUMS.txt dosyasından okundu ve indirilen"
+            echo "paketin gerçek özetiyle karşılaştırılarak doğrulandı."
+            echo
+            echo "https://github.com/csyio/vaultline-app/releases/tag/v${VERSION}"
+          } > "$RUNNER_TEMP/commit-msg.txt"
+
+          git commit -F "$RUNNER_TEMP/commit-msg.txt"
+          git push
+
+      - name: Özet
+        run: |
+          if [ "$CHANGED" = "true" ]; then
+            {
+              echo "### Cask güncellendi"
+              echo ""
+              echo "| | |"
+              echo "| :-- | :-- |"
+              echo "| Önceki sürüm | \`${OLD_VERSION}\` |"
+              echo "| Yeni sürüm | \`${VERSION}\` |"
+              echo "| sha256 | \`${SHA}\` |"
+              echo ""
+              echo "Doğrulama: özet sürümün \`SHA256SUMS.txt\` dosyasından okundu ve"
+              echo "indirilen paketin gerçek özetiyle karşılaştırıldı."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Cask zaten \`${VERSION}\` sürümünde — değişiklik yapılmadı." >> "$GITHUB_STEP_SUMMARY"
+          fi

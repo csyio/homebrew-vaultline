@@ -17,9 +17,24 @@ cask "vaultline" do
 
   app "Vaultline.app"
 
+  # `brew uninstall --zap` ile silinecek uygulama verileri.
+  #
+  # Bu liste, uygulama calistirildiktan sonra dosya sisteminde GERCEKTEN
+  # olusan yollara bakilarak dogrulandi. WebKit ve Caches girdileri kritik:
+  # webview, kullanilmasa bile WebsiteData (LocalStorage, IndexedDB) ve
+  # ag onbellegi iskeletini olusturur. Listede olmasalardi `--zap` sonrasi
+  # birkac yuz KB veri geride kalirdi.
+  #
+  # NOT: Kasa dosyaniz (.vault) ve yedekleriniz (.vaultbak) BU LISTEDE YOK
+  # ve `--zap` onlara DOKUNMAZ. Onlar sizin sectiginiz konumda durur ve
+  # sizin verinizdir — bir kaldirma komutunun tum parolalarinizi silmesi
+  # kabul edilemez bir davranis olurdu.
   zap trash: [
     "~/Library/Application Support/com.csyio.vaultline",
+    "~/Library/Caches/com.csyio.vaultline",
+    "~/Library/HTTPStorages/com.csyio.vaultline",
     "~/Library/Preferences/com.csyio.vaultline.plist",
     "~/Library/Saved Application State/com.csyio.vaultline.savedState",
+    "~/Library/WebKit/com.csyio.vaultline",
   ]
 end

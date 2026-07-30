@@ -28,19 +28,46 @@ brew upgrade --cask vaultline
 
 ## Kaldırma
 
+Yalnızca uygulamayı kaldırır, ayarları bırakır:
+
 ```sh
 brew uninstall --cask vaultline
 ```
 
-`--zap` ile uygulama verilerini de temizleyebilirsiniz:
+Uygulama verilerini de temizler:
 
 ```sh
 brew uninstall --zap --cask vaultline
 ```
 
-> **Not:** Vaultline'ın kasa dosyaları uygulamanın veri klasöründe **değil**,
-> sizin seçtiğiniz konumdadır — `--zap` onlara dokunmaz. Kasa dosyanızı ayrıca
-> yedeklemeniz sizin sorumluluğunuzdadır.
+`--zap` şu klasörleri siler:
+
+```
+~/Library/Application Support/com.csyio.vaultline
+~/Library/Caches/com.csyio.vaultline
+~/Library/HTTPStorages/com.csyio.vaultline
+~/Library/Preferences/com.csyio.vaultline.plist
+~/Library/Saved Application State/com.csyio.vaultline.savedState
+~/Library/WebKit/com.csyio.vaultline
+```
+
+> ### ⚠️ Kasa dosyanız silinmez
+>
+> `--zap` dahil **hiçbir kaldırma komutu** kasa dosyanıza (`.vault`) veya
+> yedeklerinize (`.vaultbak`) dokunmaz. Onlar sizin seçtiğiniz konumda durur
+> ve sizin verinizdir.
+>
+> Bu bilinçli bir tasarım: bir kaldırma komutunun tüm parolalarınızı
+> silmesi kabul edilemez olurdu. Kasayı da silmek istiyorsanız dosyayı
+> **kendiniz** silmelisiniz. Nerede olduğunu hatırlamıyorsanız:
+>
+> ```sh
+> mdfind -name '.vault' | grep -i vault
+> ```
+>
+> Kasa dosyası şifrelidir; silmeden önce ana parolanızı unutmadığınızdan
+> ve içindekilere artık ihtiyacınız olmadığından emin olun. **Geri dönüşü
+> yoktur.**
 
 ---
 
